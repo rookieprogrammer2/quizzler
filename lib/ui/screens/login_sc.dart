@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:quizzler/ui/screens/pass_reset_sc.dart';
 import 'package:quizzler/ui/screens/register_sc.dart';
 import 'package:quizzler/widgets/textField.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   static const String routeName = "login_sc";
   const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -25,10 +31,9 @@ class LoginScreen extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.only(bottom: height * 0.1),
                     //19
-                    decoration: BoxDecoration(
-                        // Color.fromARGB(255, 71, 212, 76)
-                        color: Colors.green.shade500,
-                        borderRadius: const BorderRadius.all(Radius.circular(200))),
+                    decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 71, 212, 76),
+                        borderRadius: BorderRadius.all(Radius.circular(200))),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: width * 0.15, vertical: height * 0.05),
@@ -37,14 +42,15 @@ class LoginScreen extends StatelessWidget {
                           SizedBox(height: height * 0.085),
                           const Column(
                             children: <Widget>[
-                              MyTextFormField(text: "Email"),
+                              MyTextFormField(text: "Email", keyboardType: TextInputType.emailAddress,),
                               MyTextFormField(
-                                text: "Password", 
-                                isObscure: true, 
+                                keyboardType: TextInputType.visiblePassword,
+                                text: "Password",
+                                isObscure: true,
                                 suffixIcon: IconButton(
                                     onPressed: null, /// TODO remove the const keyword from the column when you add functionality
                                     icon: Icon(
-                                      Icons.remove_red_eye_outlined, 
+                                      Icons.remove_red_eye_outlined,
                                       color: Colors.white,
                                     ),
                                 ),
@@ -72,7 +78,9 @@ class LoginScreen extends StatelessWidget {
 
   InkWell clickableForgotPassText() {
     return InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushNamed(context, PasswordReset.routeName);
+                          },
                           child: const Text(
                             "Forgot Password?",
                             style: TextStyle(
@@ -153,7 +161,7 @@ class LoginScreen extends StatelessWidget {
         children: <Widget>[
           const Text("Login",
               style: TextStyle(
-                  fontSize: 40,
+                  fontSize: 35,
                   color: Colors.black,
                   fontFamily: "Montserrat",
                   fontWeight: FontWeight.bold)),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MyTextFormField extends StatelessWidget {
   final String text;
   final bool isObscure;
   final IconButton? suffixIcon;
+  final TextInputType keyboardType;
   const MyTextFormField(
-      {super.key, required this.text, this.isObscure = false, this.suffixIcon});
+      {super.key, required this.text, this.isObscure = false, this.suffixIcon, required this.keyboardType});
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +18,7 @@ class MyTextFormField extends StatelessWidget {
         vertical: height * 0.01,
       ),
       child: TextFormField(
+        keyboardType:keyboardType ,
         obscureText: isObscure,
         decoration: InputDecoration(
           enabledBorder: const UnderlineInputBorder(
