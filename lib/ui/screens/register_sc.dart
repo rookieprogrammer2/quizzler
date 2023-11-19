@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:quizzler/ui/screens/login_sc.dart';
+import 'package:quizzler/utilities/fieldValidations.dart';
 import 'package:quizzler/widgets/textField.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class RegistrationScreen extends StatelessWidget {
+
+class RegistrationScreen extends StatefulWidget {
   static const routeName = "registration_sc";
-  const RegistrationScreen({Key? key}) : super(key: key);
+
+  @override
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  // "db" now represents a connection to the database.
+  TextEditingController pwdEditingController = TextEditingController();
+  var formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -34,35 +47,51 @@ class RegistrationScreen extends StatelessWidget {
                       child: Column(
                         children: <Widget>[
                           SizedBox(height: height * 0.085),
-                          const Column(
-                            children: <Widget>[
-                              MyTextFormField(text: "Username", keyboardType: TextInputType.text,),
-                              MyTextFormField(text: "Email", keyboardType: TextInputType.emailAddress,),
-                              MyTextFormField(
-                                keyboardType: TextInputType.visiblePassword,
-                                text: "Password",
-                                isObscure: true,
-                                suffixIcon: IconButton(
-                                  onPressed: null, /// TODO remove the const keyword from the column when you add functionality
-                                  icon: Icon(
-                                    Icons.remove_red_eye_outlined,
-                                    color: Colors.white,
+                          Form(
+                            key: formKey,
+                            child: Column(
+                              children: <Widget>[
+                                MyTextFormField(
+                                  /// Todo -> add another validation rule that makes sure the Username does not already exist.
+                                  labelText: "Username",
+                                  keyboardType: TextInputType.text,
+                                  validator: (value) => FormValidator.validateUsername(value),
+                                ),
+                                MyTextFormField(
+                                  /// Todo -> add another validation rule that makes sure the E-mail does not already exist.
+                                  labelText: "Email",
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) => FormValidator.validateEmail(value)
+                                ),
+                                MyTextFormField(
+                                  validator: (value) => FormValidator.validatePassword(value),
+                                  textEditingController: pwdEditingController,
+                                  keyboardType: TextInputType.visiblePassword,
+                                  labelText: "Password",
+                                  isObscure: true,
+                                  suffixIcon: const IconButton(
+                                    onPressed: null,
+                                    icon: Icon(
+                                      Icons.remove_red_eye_outlined,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              MyTextFormField(
-                                keyboardType: TextInputType.visiblePassword,
-                                text: "Confirm Password",
-                                isObscure: true,
-                                suffixIcon: IconButton(
-                                  onPressed: null, /// TODO remove the const keyword from the column when you add functionality
-                                  icon: Icon(
-                                    Icons.remove_red_eye_outlined,
-                                    color: Colors.white,
+                                MyTextFormField(
+                                  validator: (value) => FormValidator.validatePasswordConfirmation(value, pwdEditingController.text),
+                                  keyboardType: TextInputType.visiblePassword,
+                                  labelText: "Confirm Password",
+                                  isObscure: true,
+                                  suffixIcon: const IconButton(
+                                    onPressed: null,
+                                    icon: Icon(
+                                      Icons.remove_red_eye_outlined,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           SizedBox(height: height * 0.077),
                           createAccountButton(width, height),
@@ -81,7 +110,6 @@ class RegistrationScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Padding headerText(double width, double height) {
     return Padding(
@@ -105,7 +133,9 @@ class RegistrationScreen extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: width * 0.079),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          createAccount();
+        },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical:height *0.02),
           backgroundColor: Colors.black,
@@ -113,8 +143,6 @@ class RegistrationScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(60),
           ),
         ),
-
-        // height: height * 0.073,
 
         child: const Center(
           child: Text(
@@ -169,7 +197,9 @@ class RegistrationScreen extends StatelessWidget {
     );
   }
 
-
-
-
+  void createAccount() {
+    if (formKey.currentState?.validate() == false) {
+      return;
+    }
+  }
 }

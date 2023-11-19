@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:quizzler/ui/screens/register_sc.dart';
+import 'package:quizzler/utilities/fieldValidations.dart';
 import 'package:quizzler/widgets/textField.dart';
 
 import 'login_sc.dart';
 
 class PasswordReset extends StatelessWidget {
   static const String routeName = "pass_reset_sc";
-  const PasswordReset({super.key});
+  TextEditingController pwdEditingController = TextEditingController ();
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +37,15 @@ class PasswordReset extends StatelessWidget {
                       child: Column(
                         children: <Widget>[
                           SizedBox(height: height * 0.085),
-                          const Column(
+                          Column(
                             children: <Widget>[
                               MyTextFormField(
+                                validator: (value) => FormValidator.validatePassword(value),
                                 keyboardType: TextInputType.visiblePassword,
-                                text: "New Password",
+                                labelText: "New Password",
                                 isObscure: true,
-                                suffixIcon: IconButton(
-                                  onPressed: null, /// TODO remove the const keyword from the column when you add functionality
+                                suffixIcon: const IconButton(
+                                  onPressed: null,
                                   icon: Icon(
                                     Icons.remove_red_eye_outlined,
                                     color: Colors.white,
@@ -51,11 +53,12 @@ class PasswordReset extends StatelessWidget {
                                 ),
                               ),
                               MyTextFormField(
+                                validator: (value) => FormValidator.validatePasswordConfirmation(value, pwdEditingController.text),
                                 keyboardType: TextInputType.visiblePassword,
-                                text: "Confirm New Password",
+                                labelText: "Confirm New Password",
                                 isObscure: true,
-                                suffixIcon: IconButton(
-                                  onPressed: null, /// TODO remove the const keyword from the column when you add functionality
+                                suffixIcon: const IconButton(
+                                  onPressed: null,
                                   icon: Icon(
                                     Icons.remove_red_eye_outlined,
                                     color: Colors.white,

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:quizzler/ui/screens/home_sc.dart';
 import 'package:quizzler/ui/screens/pass_reset_sc.dart';
 import 'package:quizzler/ui/screens/register_sc.dart';
+import 'package:quizzler/utilities/fieldValidations.dart';
 import 'package:quizzler/widgets/textField.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "login_sc";
@@ -12,6 +15,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailEditingController = TextEditingController();
+  TextEditingController pwdEditingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -40,15 +45,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         children: <Widget>[
                           SizedBox(height: height * 0.085),
-                          const Column(
+                          Column(
                             children: <Widget>[
-                              MyTextFormField(text: "Email", keyboardType: TextInputType.emailAddress,),
                               MyTextFormField(
+                                validator: (value) => FormValidator.validateEmail(value),
+                                labelText: "Email",
+                                keyboardType: TextInputType.emailAddress,
+                                textEditingController: emailEditingController,
+
+                              ),
+                              MyTextFormField(
+                                validator: (value) => FormValidator.validatePassword(value),
+                                textEditingController: pwdEditingController,
                                 keyboardType: TextInputType.visiblePassword,
-                                text: "Password",
+                                labelText: "Password",
                                 isObscure: true,
-                                suffixIcon: IconButton(
-                                    onPressed: null, /// TODO remove the const keyword from the column when you add functionality
+                                suffixIcon: const IconButton(
+                                    onPressed: null,
                                     icon: Icon(
                                       Icons.remove_red_eye_outlined,
                                       color: Colors.white,
@@ -127,7 +140,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: width * 0.079),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: (){
+          addToDatabase();
+        },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical:height *0.02),
           backgroundColor: Colors.black,
@@ -177,5 +192,14 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
+  }
+
+  CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
+  void addToDatabase () {
+    usersCollection.add({
+      "E-mail": emailEditingController.text,
+      "Password": pwdEditingController.text
+    }).then((value) => Navigator.pushNamed(context, HomeScreen.routeName));
+    setState(() {});
   }
 }

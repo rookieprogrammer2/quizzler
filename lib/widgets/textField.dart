@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 
+typedef Validator = String? Function(String?);
+
 class MyTextFormField extends StatelessWidget {
-  final String text;
+  final Validator validator;
+  final String labelText;
   final bool isObscure;
   final IconButton? suffixIcon;
   final TextInputType keyboardType;
+  final TextEditingController? textEditingController;
   const MyTextFormField(
-      {super.key, required this.text, this.isObscure = false, this.suffixIcon, required this.keyboardType});
+      {
+        super.key,
+        this.textEditingController,
+        required this.labelText,
+        this.isObscure = false,
+        this.suffixIcon,
+        required this.keyboardType,
+        required this.validator
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +30,8 @@ class MyTextFormField extends StatelessWidget {
         vertical: height * 0.01,
       ),
       child: TextFormField(
+        validator: validator,
+        controller: textEditingController,
         keyboardType:keyboardType ,
         obscureText: isObscure,
         decoration: InputDecoration(
@@ -26,7 +40,7 @@ class MyTextFormField extends StatelessWidget {
           ),
           border: const UnderlineInputBorder(),
           suffixIcon: suffixIcon,
-          labelText: text,
+          labelText: labelText,
           labelStyle: const TextStyle(
             color: Colors.white,
           fontWeight: FontWeight.w400,
