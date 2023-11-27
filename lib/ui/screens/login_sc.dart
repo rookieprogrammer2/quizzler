@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:quizzler/ui/screens/home_sc.dart';
+import 'package:quizzler/ui/screens/home/home_tab.dart';
 import 'package:quizzler/ui/screens/pass_reset_sc.dart';
 import 'package:quizzler/ui/screens/register_sc.dart';
 import 'package:quizzler/utilities/fieldValidations.dart';
 import 'package:quizzler/widgets/textField.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "login_sc";
@@ -17,6 +18,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailEditingController = TextEditingController();
   TextEditingController pwdEditingController = TextEditingController();
+  CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -89,6 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// <== Clickable Forgot Password Text ==> ///
   InkWell clickableForgotPassText() {
     return InkWell(
                           onTap: () {
@@ -105,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
   }
 
+  /// <== Clickable Register Text ==> ///
   Row clickableRegisterText(BuildContext context) {
     return Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -136,12 +141,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
   }
 
+  /// <== Login button ==> ///
   Container loginButton(double width, double height) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: width * 0.079),
       child: ElevatedButton(
         onPressed: (){
-          addToDatabase();
+          login();
         },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical:height *0.02),
@@ -167,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// <== Header Text ==> ///
   Padding headerText(double width, double height) {
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -194,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
+  /// <== Adds a user to the data base ==> ///
   void addToDatabase () {
     usersCollection.add({
       "E-mail": emailEditingController.text,
@@ -202,4 +209,22 @@ class _LoginScreenState extends State<LoginScreen> {
     }).then((value) => Navigator.pushNamed(context, HomeScreen.routeName));
     setState(() {});
   }
+
+  /// <== Logs a user in ==> ///
+  void login () async {
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailEditingController.text,
+          password: pwdEditingController.text
+      );
+      print("User logged in successfully. User ID: ${credential.user?.uid}");
+
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' || e.code == 'wrong-password' ) {
+        print('Wrong E-mail or password');
+      }
+    }
+  }
+
+
 }
