@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:quizzler/ui/screens/home_sc.dart';
-import 'package:quizzler/ui/screens/pass_reset_sc.dart';
-import 'package:quizzler/ui/screens/register_sc.dart';
+import 'package:quizzler/ui/screens/home/home_tab.dart';
+import 'package:quizzler/ui/screens/register/register_sc.dart';
+import 'package:quizzler/utilities/dialogs.dart';
 import 'package:quizzler/utilities/fieldValidations.dart';
 import 'package:quizzler/widgets/textField.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../database/users_dao.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "login_sc";
@@ -17,6 +19,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailEditingController = TextEditingController();
   TextEditingController pwdEditingController = TextEditingController();
+  CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
+  var formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -45,37 +49,38 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         children: <Widget>[
                           SizedBox(height: height * 0.085),
-                          Column(
-                            children: <Widget>[
-                              MyTextFormField(
-                                validator: (value) => FormValidator.validateEmail(value),
-                                labelText: "Email",
-                                keyboardType: TextInputType.emailAddress,
-                                textEditingController: emailEditingController,
+                          Form(
+                            key: formKey,
+                            child: Column(
+                              children: <Widget>[
+                                MyTextFormField(
+                                  hintText: "Email",
+                                  keyboardType: TextInputType.emailAddress,
+                                  textEditingController: emailEditingController,
+                                  validator: (value) => FormValidator.validateEmail(value),
 
-                              ),
-                              MyTextFormField(
-                                validator: (value) => FormValidator.validatePassword(value),
-                                textEditingController: pwdEditingController,
-                                keyboardType: TextInputType.visiblePassword,
-                                labelText: "Password",
-                                isObscure: true,
-                                suffixIcon: const IconButton(
-                                    onPressed: null,
-                                    icon: Icon(
-                                      Icons.remove_red_eye_outlined,
-                                      color: Colors.white,
-                                    ),
                                 ),
-                              ),
-                            ],
+                                MyTextFormField(
+                                  isObscure: true,
+                                  hintText: "Password",
+                                  keyboardType: TextInputType.visiblePassword,
+                                  textEditingController: pwdEditingController,
+                                  validator: (value) => FormValidator.validatePassword(value),
+                                  suffixIcon: const IconButton(
+                                      onPressed: null,
+                                      icon: Icon(
+                                        Icons.remove_red_eye_outlined,
+                                        color: Colors.white,
+                                      ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           SizedBox(height: height * 0.077),
                           loginButton(width, height),
                           SizedBox(height: height * 0.02),
                           clickableRegisterText(context),
-                          SizedBox(height: height * 0.02),
-                          clickableForgotPassText(),
                         ],
                       ),
                     ),
@@ -89,22 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  InkWell clickableForgotPassText() {
-    return InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, PasswordReset.routeName);
-                          },
-                          child: const Text(
-                            "Forgot Password?",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              fontSize: 17
-                            ),
-                          ),
-                        );
-  }
 
+  /// <== Clickable Register Text ==> ///
   Row clickableRegisterText(BuildContext context) {
     return Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -136,12 +127,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
   }
 
+  /// <== Login button ==> ///
   Container loginButton(double width, double height) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: width * 0.079),
       child: ElevatedButton(
         onPressed: (){
-          addToDatabase();
+          login();
         },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical:height *0.02),
@@ -167,6 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// <== Header Text ==> ///
   Padding headerText(double width, double height) {
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -194,12 +187,30 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
-  void addToDatabase () {
-    usersCollection.add({
-      "E-mail": emailEditingController.text,
-      "Password": pwdEditingController.text
-    }).then((value) => Navigator.pushNamed(context, HomeScreen.routeName));
-    setState(() {});
+  /// <== Logs a user in ==> ///
+  void login () async {
+    if (formKey.currentState?.validate() == false) {
+      return;
+    }
+    try {
+      MyDialogs.showLoadingDialog(context);
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailEditingController.text,
+          password: pwdEditingController.text
+      );
+      var user = await UsersDAO.getUser(credential.user!.uid);
+      MyDialogs.dismissDialog(context);
+      MyDialogs.showCustomDialog(context,dialogMessage:  "Logged in successfully!", positiveActionName: "Ok", isDismissible: false, positiveAction: () {Navigator.pushReplacementNamed(context, HomeScreen.routeName);});
+
+    } on FirebaseAuthException catch (e) {
+      MyDialogs.dismissDialog(context);
+      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == "INVALID_LOGIN_CREDENTIALS" ) {
+        MyDialogs.showCustomDialog(context, isDismissible: true, dialogMessage: "Invalid login credentials.\nPlease, try again.", positiveActionName: "Ok");
+      // } else {
+      //   MyDialogs.showCustomDialog(context, isDismissible: true, dialogMessage:  "Something went wrong.\nPlease, try again.\nError: ${e.code}", positiveActionName: "Ok");
+      }
+    }
   }
+
+
 }
