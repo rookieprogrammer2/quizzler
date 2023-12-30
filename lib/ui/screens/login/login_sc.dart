@@ -17,117 +17,142 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
   TextEditingController emailEditingController = TextEditingController();
   TextEditingController pwdEditingController = TextEditingController();
   CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
   var formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              headerText(width, height),
-              SizedBox(height: height * 0.01),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    padding: EdgeInsets.only(bottom: height * 0.1),
-                    //19
-                    decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 71, 212, 76),
-                        borderRadius: BorderRadius.all(Radius.circular(200))),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: width * 0.15, vertical: height * 0.05),
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(height: height * 0.085),
-                          Form(
-                            key: formKey,
-                            child: Column(
-                              children: <Widget>[
-                                MyTextFormField(
-                                  hintText: "Email",
-                                  keyboardType: TextInputType.emailAddress,
-                                  textEditingController: emailEditingController,
-                                  validator: (value) => FormValidator.validateEmail(value),
+        backgroundColor: Colors.white,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            headerText(width, height),
+            SizedBox(height: height * 0.09),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(bottom: height * 0.1),
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 35, 168, 51),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(60),
+                    topRight: Radius.circular(60),
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.15, vertical: height * 0.01),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: height * 0.085),
+                        Form(
+                          key: formKey,
+                          child: Column(
+                            children: <Widget>[
+                              MyTextFormField(
+                                hintText: "Email",
+                                keyboardType: TextInputType.emailAddress,
+                                textEditingController: emailEditingController,
+                                validator: (value) => FormValidator.validateEmail(value),
 
-                                ),
-                                MyTextFormField(
-                                  isObscure: true,
-                                  hintText: "Password",
-                                  keyboardType: TextInputType.visiblePassword,
-                                  textEditingController: pwdEditingController,
-                                  validator: (value) => FormValidator.validatePassword(value),
-                                  suffixIcon: const IconButton(
-                                      onPressed: null,
-                                      icon: Icon(
-                                        Icons.remove_red_eye_outlined,
+                              ),
+                              MyTextFormField(
+                                isObscure: _obscureText,
+                                hintText: "Password",
+                                keyboardType: TextInputType.visiblePassword,
+                                textEditingController: pwdEditingController,
+                                validator: (value) => FormValidator.validatePassword(value),
+                                suffixIcon: IconButton(
+                                        onPressed: (){
+                                          _obscureText = !_obscureText;
+                                          print("ICON CLICKED!");
+                                          setState(() {});
+                                        },
+                                        icon: _obscureText ? const Icon(
+                                            Icons.visibility,
+                                            color: Colors.white,
+                                          size: 18,
+                                        ) : const Icon(
+                                            Icons.visibility_off,
                                         color: Colors.white,
-                                      ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                                          size: 18,
+                                        ),
+                                    ),
+
+                              ),
+                            ],
                           ),
-                          SizedBox(height: height * 0.077),
-                          loginButton(width, height),
-                          SizedBox(height: height * 0.02),
-                          clickableRegisterText(context),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: height * 0.077),
+                        loginButton(width, height),
+                        SizedBox(height: height * 0.02),
+                        clickableRegisterText(context),
+                      ],
                     ),
                   ),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );
   }
 
 
-  /// <== Clickable Register Text ==> ///
-  Row clickableRegisterText(BuildContext context) {
-    return Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+  /// <== Clickable Register Text <== ///
+  Column clickableRegisterText(BuildContext context) {
+    return Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Text(
-                              "Don't have an account? ",
-                              style:TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w400
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, RegistrationScreen.routeName);
-                              },
-                              child: const Text(
-                                "Register",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                    fontSize: 17
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Don't have an account?",
+                                  style:TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w300
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                            Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, RegistrationScreen.routeName);
+                                  },
+                                  child: const Text(
+                                    "Register",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                        fontSize: 17
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
 
                           ],
                         );
   }
 
-  /// <== Login button ==> ///
+  /// <== Login button <== ///
   Container loginButton(double width, double height) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: width * 0.079),
@@ -150,8 +175,8 @@ class _LoginScreenState extends State<LoginScreen> {
             "Login",
             style: TextStyle(
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                fontSize: 17,
             ),
           ),
         ),
@@ -159,11 +184,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// <== Header Text ==> ///
+  /// <== Header Text <== ///
   Padding headerText(double width, double height) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: width * 0.05, vertical: height * 0.02),
+      padding: EdgeInsets.only(
+          left: width * 0.05, top: height * 0.079),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -187,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// <== Logs a user in ==> ///
+  /// <== Logs a user in <== ///
   void login () async {
     if (formKey.currentState?.validate() == false) {
       return;

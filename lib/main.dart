@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         RegistrationScreen.routeName: (_) => RegistrationScreen(),
         HomeScreen.routeName: (_) => const HomeScreen(),
       },
-      initialRoute: HomeScreen.routeName,
+      initialRoute: LoginScreen.routeName,
     );
   }
 

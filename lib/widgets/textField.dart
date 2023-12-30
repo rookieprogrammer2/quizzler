@@ -29,34 +29,20 @@ class MyTextFormField extends StatelessWidget {
         vertical: height * 0.01,
       ),
       child: TextFormField(
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white.withOpacity(0.8)),
         validator: validator,
         controller: textEditingController,
         keyboardType: keyboardType,
         obscureText: isObscure,
         decoration: InputDecoration(
           enabledBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white, width: 0.9),
+            borderSide: BorderSide(color: Colors.white, width: 0.5),
           ),
           border: const UnderlineInputBorder(),
-          suffixIcon: isObscure
-              ? IconButton(
-                  onPressed: null,
-                  icon: Icon(
-                    Icons.remove_red_eye_outlined,
-                    color: Colors.white,
-                  ),
-                )
-              : IconButton(
-                  onPressed: null,
-                  icon: SvgPicture.asset(
-                    "assets/icons/visibility_off.svg",
-                    color: Colors.white,
-                    width: width * 0.06,
-                  )),
+          suffixIcon: suffixIcon,
           hintText: hintText,
-          hintStyle: const TextStyle(
-            color: Colors.white,
+          hintStyle: TextStyle(
+            color: Colors.white.withOpacity(0.8),
             fontWeight: FontWeight.w400,
             fontSize: 15,
           ),
