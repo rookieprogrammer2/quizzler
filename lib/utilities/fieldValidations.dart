@@ -6,7 +6,7 @@ abstract class FormValidator {
     if (value == null || value.isEmpty) {
       return 'Username is required';
     }
-    if (value.length < 3) {
+    if (value.length < 4) {
       return 'Username must be at least 3 characters long';
     }
     return null;
@@ -30,7 +30,7 @@ abstract class FormValidator {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
-    if (value.length < 8) {
+    if (value.length < 6) {
       return 'Password must be at least 6 characters long';
     }
     return null;

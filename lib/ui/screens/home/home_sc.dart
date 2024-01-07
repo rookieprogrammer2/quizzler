@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
-import 'package:quizzler/ui/screens/home/settings_tab.dart';
+import 'package:quizzler/ui/screens/settings/settings_sc.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "home_screen";
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
             "Login",
           ),
         ),
-      ) : const SettingsTab()
+      ) : const SettingsScreen()
     );
   }
 }

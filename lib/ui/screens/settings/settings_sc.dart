@@ -86,12 +86,66 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quizzler/providers/user_provider.dart';
+import 'package:quizzler/ui/screens/login/login_sc.dart';
+import 'package:quizzler/utilities/dialogs.dart';
 
-class SettingsTab extends StatelessWidget {
-  const SettingsTab({super.key});
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+  static const String routeName = "settings_sc";
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+
+    return SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+                "Settings",
+            style: TextStyle(
+              color: Colors.black
+            ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                TextButton(
+                  onPressed: (){
+                    logout(context);
+                  },
+                  child: const Text(
+                    "Logout",
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+    );
+  }
+  void logout (BuildContext context) {
+    var authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+    MyDialogs.showCustomDialog(
+        context,
+        dialogMessage: "Are you sure you want to logout?",
+        isDismissible: false,
+      positiveActionName: "Yes",
+      negativeActionName: "No",
+      positiveAction: () {
+          authProvider.logout();
+      Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+      MyDialogs.dismissDialog(context);
+      }
+    );
   }
 }
+
