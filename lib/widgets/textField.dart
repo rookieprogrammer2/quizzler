@@ -59,7 +59,7 @@ class MyTextFormField extends StatelessWidget {
                   borderSide: BorderSide(color: Colors.white, width: 1),
                 ),
                 errorBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red.shade600, width: 1),
+                  borderSide: BorderSide(color: Colors.red.shade500, width: 1),
                 ),
                 focusedErrorBorder: UnderlineInputBorder(
                   borderSide:
@@ -69,7 +69,7 @@ class MyTextFormField extends StatelessWidget {
                 suffixIcon: suffixIcon,
                 hintText: hintText,
                 hintStyle: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withOpacity(0.9),
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
                 ),

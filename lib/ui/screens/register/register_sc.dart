@@ -6,10 +6,13 @@ import 'package:quizzler/providers/user_provider.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
 import 'package:quizzler/utilities/dialogs.dart';
 import 'package:quizzler/utilities/fieldValidations.dart';
+import 'package:quizzler/widgets/role_list.dart';
 import 'package:quizzler/widgets/textField.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const routeName = "registration_sc";
+
+  const RegistrationScreen({super.key});
 
   @override
   State<RegistrationScreen> createState() => _RegistrationScreenState();
@@ -18,14 +21,13 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   FirebaseFirestore db = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
-
-  TextEditingController pwdEditingController = TextEditingController();
-  TextEditingController emailEditingController = TextEditingController();
-  TextEditingController userNameEditingController = TextEditingController();
-  var formKey = GlobalKey<FormState>();
-
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController roleController = TextEditingController();
   bool _obscureText = true;
   bool _obscureTextTwo = true;
+  var formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -37,21 +39,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             headerText(width, height),
-            SizedBox(height: height * 0.09),
+            SizedBox(height: height * 0.1,),
             Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 35, 168, 51),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(60),
-                      topRight: Radius.circular(60),
-                    ),
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 35, 168, 51),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50),
+                    topRight: Radius.circular(50),
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: width * 0.15, vertical: height * 0.01),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.15, vertical: height * 0.01),
+                  child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
                         SizedBox(height: height * 0.085),
@@ -59,17 +61,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           key: formKey,
                           child: Column(
                             children: <Widget>[
-                              Container(
-                                color: Colors.white,
-                                padding: const EdgeInsets.all(8.0),
-                                child: const Row(
-                                  children: [
-                                    Text("Role"),
-                                    Spacer(),
-                                    Icon(Icons.keyboard_arrow_down_rounded),
-                                  ],
-                                ),
-                              ),
+                              MyRole(context: context,),
                               MyTextFormField(
                                 context: context,
                                 /// Todo -> add another validation rule that makes sure the Username does not already exist.
@@ -77,33 +69,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     Icons.person_outline_rounded,
                                     color: Colors.white.withOpacity(0.8)),
                                 hintText: "Username",
-                                onChanged: (value) {
-                                  if (value.length >= 3) {
-                                    userNameEditingController.clearComposing();
-                                    setState(() {});
-                                  }
-                                },
                                 textEditingController:
-                                    userNameEditingController,
+                                    usernameController,
                                 keyboardType: TextInputType.text,
                                 validator: (value) =>
                                     FormValidator.validateUsername(value),
                               ),
                               MyTextFormField(
                                   context: context,
-                                  /// Todo -> add another validation rule that makes sure the E-mail does not already exist.
                                   hintText: "Email",
                                   textFieldIcon: Icon(
                                       Icons.email_outlined,
                                       color: Colors.white.withOpacity(0.8),
                                   ),
-                                  textEditingController: emailEditingController,
-                                  onChanged: (value) {
-                                    if (FormValidator.validateEmail(value) == null) {
-                                      emailEditingController.clearComposing();
-                                      setState(() {});
-                                    }
-                                  },
+                                  textEditingController: emailController,
                                   keyboardType: TextInputType.emailAddress,
                                   validator: (value) => FormValidator.validateEmail(value)
                               ),
@@ -115,13 +94,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 ),
                                 validator: (value) =>
                                     FormValidator.validatePassword(value),
-                                textEditingController: pwdEditingController,
-                                onChanged: (value) {
-                                  if (FormValidator.validatePassword(value) == null) {
-                                    pwdEditingController.clearComposing();
-                                    setState(() {});
-                                  }
-                                },
+                                textEditingController: passwordController,
                                 keyboardType: TextInputType.visiblePassword,
                                 hintText: "Password",
                                 isObscure: _obscureText,
@@ -139,7 +112,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                         )
                                       : const Icon(
                                           Icons.visibility_off,
-                                          color: Colors.white,
+                                          color: Colors.lightBlueAccent,
                                           size: 18,
                                         ),
                                 ),
@@ -152,7 +125,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 ),
                                 validator: (value) =>
                                     FormValidator.validatePasswordConfirmation(
-                                        value, pwdEditingController.text),
+                                        value, passwordController.text),
                                 keyboardType: TextInputType.visiblePassword,
                                 hintText: "Confirm Password",
                                 isObscure: _obscureTextTwo,
@@ -170,7 +143,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                         )
                                       : const Icon(
                                           Icons.visibility_off,
-                                          color: Colors.white,
+                                          color: Colors.lightBlueAccent,
                                           size: 18,
                                         ),
                                 ),
@@ -181,7 +154,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         SizedBox(height: height * 0.077),
                         createAccountButton(width, height),
                         SizedBox(height: height * 0.02),
-                        clickableLoginText(context),
+                        loginInstead(context),
                         SizedBox(height: height * 0.02),
                       ],
                     ),
@@ -205,10 +178,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           Text(
             "Register",
             style: TextStyle(
-              fontSize: 35,
+              fontSize: 40,
               color: Colors.black,
               fontFamily: "Montserrat",
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -246,7 +219,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   /// => Clickable Login Text <== ///
-  Row clickableLoginText(BuildContext context) {
+  Row loginInstead(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -278,20 +251,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (formKey.currentState?.validate() == false) {
       return;
     }
-    var authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
     try {
       MyDialogs.showLoadingDialog(context);
-      await authProvider.register(emailEditingController.text,
-          pwdEditingController.text, userNameEditingController.text);
-
+      var authProvider =
+      Provider.of<AuthenticationProvider>(context, listen: false);
+      await authProvider.register(emailController.text, passwordController.text, usernameController.text, roleController.text);
       MyDialogs.dismissDialog(context);
       MyDialogs.showCustomDialog(context,
           dialogMessage: "Account created successfully!",
           isDismissible: true,
-          positiveActionName: "Ok", positiveAction: () {
-        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
-      });
+          positiveActionName: "Ok",
+          positiveAction: () {Navigator.pushReplacementNamed(context, LoginScreen.routeName);});
+
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         MyDialogs.showCustomDialog(context,
@@ -329,4 +300,5 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
     });
   }
+
 }

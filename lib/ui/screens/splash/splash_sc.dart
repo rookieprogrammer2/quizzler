@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quizzler/providers/user_provider.dart';
+import 'package:quizzler/ui/screens/home/home_sc.dart';
+import 'package:quizzler/ui/screens/landing/landing_sc.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
 import 'package:quizzler/utilities/app_assets.dart';
 
@@ -16,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Future.delayed(const Duration(seconds: 3),
             () {
-          Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+          navigate();
         });
   }
   @override
@@ -31,5 +35,15 @@ class _SplashScreenState extends State<SplashScreen> {
         )
       ),
     );
+  }
+
+  void navigate() async {
+    var authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+    if (authProvider.isAuthenticated()) {
+      await authProvider.retrieveUserFromDatabase();
+      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+    } else {
+      Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+    }
   }
 }

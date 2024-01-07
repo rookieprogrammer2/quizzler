@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:quizzler/ui/screens/home/home_tab.dart';
+import 'package:provider/provider.dart';
+import 'package:quizzler/providers/user_provider.dart';
+import 'package:quizzler/ui/screens/home/home_sc.dart';
 import 'package:quizzler/ui/screens/register/register_sc.dart';
 import 'package:quizzler/utilities/dialogs.dart';
 import 'package:quizzler/utilities/fieldValidations.dart';
 import 'package:quizzler/widgets/textField.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../database/users_dao.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../database/user_dao.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "login_sc";
@@ -17,11 +19,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  FirebaseFirestore db = FirebaseFirestore.instance;
-  FirebaseAuth auth = FirebaseAuth.instance;
-  TextEditingController emailEditingController = TextEditingController();
-  TextEditingController pwdEditingController = TextEditingController();
-  CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
+  TextEditingController emailController = TextEditingController(text: "Omar@example.com");
+  TextEditingController passwordController = TextEditingController(text: "123456789");
   var formKey = GlobalKey<FormState>();
   bool _obscureText = true;
   @override
@@ -39,6 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Expanded(
               child: Container(
                 width: double.infinity,
+                margin: EdgeInsets.only(top: height * 0.1),
                 padding: EdgeInsets.only(bottom: height * 0.1),
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 35, 168, 51),
@@ -66,15 +66,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                                 hintText: "Email",
                                 keyboardType: TextInputType.emailAddress,
-                                textEditingController: emailEditingController,
-                                onChanged: (value) {
-                                  if (FormValidator.validateEmail(value) == null) {
-                                    emailEditingController.clearComposing();
-                                    setState(() {});
-                                  }
-                                },
+                                textEditingController: emailController,
                                 validator: (value) => FormValidator.validateEmail(value),
-
                               ),
                               MyTextFormField(
                                 context: context,
@@ -85,13 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 isObscure: _obscureText,
                                 hintText: "Password",
                                 keyboardType: TextInputType.visiblePassword,
-                                textEditingController: pwdEditingController,
-                                onChanged: (value) {
-                                  if (FormValidator.validatePassword(value) == null) {
-                                    pwdEditingController.clearComposing();
-                                    setState(() {});
-                                  }
-                                },
+                                textEditingController: passwordController,
                                 validator: (value) => FormValidator.validatePassword(value),
                                 suffixIcon: IconButton(
                                         onPressed: (){
@@ -105,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           size: 18,
                                         ) : const Icon(
                                             Icons.visibility_off,
-                                        color: Colors.white,
+                                        color: Colors.lightBlueAccent,
                                           size: 18,
                                         ),
                                     ),
@@ -241,11 +228,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     try {
       MyDialogs.showLoadingDialog(context);
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailEditingController.text,
-          password: pwdEditingController.text
-      );
-      var user = await UsersDAO.getUser(credential.user!.uid);
+      var authProvider  = Provider.of<AuthenticationProvider>(context, listen: false);
+      await authProvider.login(emailController.text, passwordController.text);
       MyDialogs.dismissDialog(context);
       MyDialogs.showCustomDialog(context,dialogMessage:  "Logged in successfully!", positiveActionName: "Ok", isDismissible: false, positiveAction: () {Navigator.pushReplacementNamed(context, HomeScreen.routeName);});
 
