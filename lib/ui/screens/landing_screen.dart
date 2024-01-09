@@ -3,8 +3,8 @@ import 'package:quizzler/ui/screens/login/login_sc.dart';
 import 'package:quizzler/utilities/app_assets.dart';
 
 class LandingScreen extends StatelessWidget {
+  static const String routeName = "landing_screen";
 
-  static const String routeName = "landing_sc";
   const LandingScreen({super.key});
 
   @override
@@ -20,17 +20,17 @@ class LandingScreen extends StatelessWidget {
             child: Image.asset(
                 "${AppAssets.imagesPath}student_illustration.jpg"), // Replace with your illustration asset
           ),
-          Container(
-            padding: const EdgeInsets.all(13.0),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.all(13.0),
+            child: Text(
               "Easy quiz creation",
               textAlign: TextAlign.start,
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(13.0),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.all(13.0),
+            child: Text(
               "Create simple T/F & MCQ quizzes with an easy-to-use interface. "
               "Share them with your students and get detailed feedback on their performance",
               textAlign: TextAlign.start,
@@ -43,7 +43,7 @@ class LandingScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.sizeOf(context).height * 0.02),
+                    vertical: MediaQuery.of(context).size.height * 0.02),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(60),
                 ),
