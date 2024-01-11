@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quizzler/models/user.dart' as MyUser;
+import 'package:quizzler/database/models/user_model.dart' as MyUser;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:quizzler/database/user_dao.dart';
+import 'package:quizzler/ui/screens/login/login_sc.dart';
 
 class AuthenticationProvider extends ChangeNotifier {
   User? firebaseAuthenticationUser;
@@ -37,6 +38,7 @@ class AuthenticationProvider extends ChangeNotifier {
         ));
   }
 
+
   Future<void> login (String emailController, String passwordController) async {
     final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController,
@@ -47,16 +49,10 @@ class AuthenticationProvider extends ChangeNotifier {
     firebaseAuthenticationUser = credential.user;
   }
 
-  void logout () {
+  logout (BuildContext context) async {
     databaseUser = null;
-    FirebaseAuth.instance.signOut();
-  }
-
-  bool isAuthenticated () => FirebaseAuth.instance.currentUser != null;
-
-  Future<void> retrieveUserFromDatabase () async {
-    firebaseAuthenticationUser = FirebaseAuth.instance.currentUser;
-    databaseUser = await UsersDAO.getUser(firebaseAuthenticationUser!.uid);
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, LoginScreen.routeName);
   }
 
 

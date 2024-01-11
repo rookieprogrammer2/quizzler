@@ -1,28 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:quizzler/database/models/quiz_model.dart';
 import 'package:quizzler/database/models/user_model.dart';
+import 'package:quizzler/database/user_dao.dart';
 
-class UsersDAO {
+class QuizDAO {
 
-  static CollectionReference<User> get usersCollection {
-    var usersCollection = FirebaseFirestore.instance.collection("users").withConverter(
-      fromFirestore: (snapshot, options) => User.fromFirestore(snapshot.data()),
-      toFirestore: (object, options) => object.toFirestore(),
+  static CollectionReference<Quiz> getQuizzesCollection (String uid) {
+    return UsersDAO.usersCollection.doc(uid).collection("quizzes").withConverter(
+        fromFirestore: (snapshot, options) => Quiz.fromFirestore(snapshot.data()),
+        toFirestore: (quiz, options) => quiz.toFirestore(),
     );
-    return usersCollection;
   }
 
-// This is the function that is called in the second part within the "register" function,
-//  which means that this is where the magic happens.
-  static Future<void> createUser (User user) {
-    return usersCollection.doc(user.id).set(user);
-// Returns a DocumentReference with the provided path.
-// Sets data on that document, overwriting any existing data. If the document does not yet exist, it will be created.
-  }
+  static Future <void> createQuiz (Quiz quiz, String uid) {
+    var docRef = getQuizzesCollection(uid).doc();
+    quiz.id = docRef.id;
+    return docRef.set(quiz);
 
-  static Future<User?> getUser (String uid) async {
-    var doc = usersCollection.doc(uid);
-    var docSnapshot = await doc.get();
-    return docSnapshot.data();
   }
 }
 /*

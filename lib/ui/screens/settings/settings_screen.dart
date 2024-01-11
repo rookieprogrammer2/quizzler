@@ -87,14 +87,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quizzler/providers/user_provider.dart';
+import 'package:quizzler/providers/auth_provider.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
 import 'package:quizzler/utilities/dialogs.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
   static const String routeName = "settings_sc";
-
   @override
   Widget build(BuildContext context) {
 
@@ -116,13 +115,14 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: (){
-                    logout(context);
+                    signout(context);
                   },
                   child: const Text(
                     "Logout",
                     style: TextStyle(
                         color: Colors.red,
-                        fontWeight: FontWeight.bold
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16
                     ),
                   ),
                 ),
@@ -132,7 +132,7 @@ class SettingsScreen extends StatelessWidget {
         )
     );
   }
-  void logout (BuildContext context) {
+  void signout (BuildContext context) {
     var authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
     MyDialogs.showCustomDialog(
         context,
@@ -141,9 +141,7 @@ class SettingsScreen extends StatelessWidget {
       positiveActionName: "Yes",
       negativeActionName: "No",
       positiveAction: () {
-          authProvider.logout();
-      Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
-      MyDialogs.dismissDialog(context);
+          authProvider.logout(context);
       }
     );
   }

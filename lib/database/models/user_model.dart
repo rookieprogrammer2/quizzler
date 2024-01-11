@@ -1,8 +1,8 @@
 class User {
   String? id;
   String? username;
-  String? email;
   String? role;
+  String? email;
 
   User ({
     this.id,
@@ -17,6 +17,7 @@ class User {
     email = data?['email'];
     role = data?['role'];
   }
+
   Map<String, dynamic> toFirestore () {
     return {
       'id': id,
@@ -25,4 +26,5 @@ class User {
       'role': role
     };
   }
+
 }

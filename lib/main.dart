@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:quizzler/ui/screens/quiz/quiz_screen.dart';
 import 'package:quizzler/providers/role_provider.dart';
 import 'package:quizzler/providers/settings_provider.dart';
-import 'package:quizzler/providers/user_provider.dart';
+import 'package:quizzler/providers/auth_provider.dart';
 import 'package:quizzler/ui/screens/home/home_sc.dart';
-import 'package:quizzler/ui/screens/landing/landing_sc.dart';
+import 'package:quizzler/ui/screens/home/student_home_screen.dart';
+import 'package:quizzler/ui/screens/landing_screen.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
 import 'package:quizzler/ui/screens/register/register_sc.dart';
-import 'package:quizzler/ui/screens/settings/settings_sc.dart';
-import 'package:quizzler/ui/screens/splash/splash_sc.dart';
+import 'package:quizzler/ui/screens/settings/settings_screen.dart';
+import 'package:quizzler/ui/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -20,15 +22,18 @@ void main() async {
   return runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => SettingsProvider()),
         ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
         ChangeNotifierProvider(create: (context) => RoleProvider()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,11 +55,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         SplashScreen.routeName: (_) => const SplashScreen(),
-        LoginScreen.routeName: (_) => const LoginScreen(),
+        LandingScreen.routeName: (_) => LandingScreen(),
         RegistrationScreen.routeName: (_) => const RegistrationScreen(),
+        LoginScreen.routeName: (_) => const LoginScreen(),
         HomeScreen.routeName: (_) => const HomeScreen(),
+        QuizCreationScreen.routeName: (_) => QuizCreationScreen(),
         SettingsScreen.routeName: (_) => const SettingsScreen(),
-        LandingScreen.routeName: (_) => LandingScreen()
+        StudentHomeScreen.routeName: (_) => StudentHomeScreen()
       },
       initialRoute: RegistrationScreen.routeName,
     );

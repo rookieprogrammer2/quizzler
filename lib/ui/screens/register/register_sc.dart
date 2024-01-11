@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quizzler/providers/role_provider.dart';
-import 'package:quizzler/providers/user_provider.dart';
+import 'package:quizzler/providers/auth_provider.dart';
+import 'package:quizzler/ui/screens/home/home_sc.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
 import 'package:quizzler/utilities/dialogs.dart';
 import 'package:quizzler/utilities/fieldValidations.dart';
@@ -255,14 +256,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
     try {
       MyDialogs.showLoadingDialog(context);
-      var authProvider =
-      Provider.of<AuthenticationProvider>(context, listen: false);
-      var selectedRole = Provider.of<RoleProvider>(context, listen: false).selectedRole;
+      var authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+      var roleProvider = Provider.of<RoleProvider>(context, listen: false);
       await authProvider.register(
           emailController.text,
           passwordController.text,
           usernameController.text,
-          selectedRole,
+          roleProvider.selectedRole,
       );
       MyDialogs.dismissDialog(context);
       MyDialogs.showCustomDialog(context,

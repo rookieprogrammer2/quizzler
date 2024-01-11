@@ -13,7 +13,7 @@ class MyDialogs {
           content: Row(
             children: [
               const CircularProgressIndicator(),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.05),
               const Text("Loading..."),
             ],
           ),

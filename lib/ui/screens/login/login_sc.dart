@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quizzler/providers/user_provider.dart';
+import 'package:quizzler/providers/auth_provider.dart';
+import 'package:quizzler/providers/role_provider.dart';
 import 'package:quizzler/ui/screens/home/home_sc.dart';
+import 'package:quizzler/ui/screens/home/student_home_screen.dart';
 import 'package:quizzler/ui/screens/register/register_sc.dart';
 import 'package:quizzler/utilities/dialogs.dart';
 import 'package:quizzler/utilities/fieldValidations.dart';
@@ -19,8 +21,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController emailController = TextEditingController(text: "Omar@example.com");
-  TextEditingController passwordController = TextEditingController(text: "123456789");
+  TextEditingController emailController = TextEditingController(text: "Omar@gmail.com");
+  TextEditingController passwordController = TextEditingController(text: "12345678");
   var formKey = GlobalKey<FormState>();
   bool _obscureText = true;
   @override
@@ -229,9 +231,28 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       MyDialogs.showLoadingDialog(context);
       var authProvider  = Provider.of<AuthenticationProvider>(context, listen: false);
+      var roleProvider  = Provider.of<RoleProvider>(context, listen: false);
       await authProvider.login(emailController.text, passwordController.text);
       MyDialogs.dismissDialog(context);
-      MyDialogs.showCustomDialog(context,dialogMessage:  "Logged in successfully!", positiveActionName: "Ok", isDismissible: false, positiveAction: () {Navigator.pushReplacementNamed(context, HomeScreen.routeName);});
+      // String? userRole = roleProvider.selectedRole;
+      String userRole = roleProvider.userRole;
+
+      /// Todo => try to find a way to call the "updateSelectedRole" method as you log in
+
+      if (userRole == "Lecturer") {
+        MyDialogs.showCustomDialog(context,dialogMessage:  "Logged in successfully!", positiveActionName: "Ok", isDismissible: false, positiveAction: () {
+          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        }
+        );
+      } else if (userRole == "Student") {
+        MyDialogs.showCustomDialog(context,dialogMessage:  "Logged in successfully!", positiveActionName: "Ok", isDismissible: false, positiveAction: () {
+          Navigator.pushReplacementNamed(context, StudentHomeScreen.routeName);
+        }
+        );
+      } else {
+        MyDialogs.showCustomDialog(context, dialogMessage: "Error", isDismissible: true);
+      }
+
 
     } on FirebaseAuthException catch (e) {
       MyDialogs.dismissDialog(context);

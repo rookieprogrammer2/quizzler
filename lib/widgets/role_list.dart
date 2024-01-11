@@ -14,8 +14,8 @@ class MyRole extends StatefulWidget {
 }
 
 class _MyRoleState extends State<MyRole> {
-  final List<String> _roles = ["Student", "Lecturer"];
-  String selectedDropdownItem = "Student";
+  final List<String> _roles = ["Student", "Lecturer", "Role"];
+  String dropdownMenuItem = "Role";
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +44,11 @@ class _MyRoleState extends State<MyRole> {
             ),
             iconEnabledColor: Colors.white.withOpacity(0.9),
             iconSize: 30,
-            value: roleProvider.selectedRole,
+            value: dropdownMenuItem,
             onChanged: (String? value) {
               setState(() {
                 roleProvider.updateSelectedRole(value!);
+                dropdownMenuItem = value.toString();
               });
             },
             items: _roles.map((String item) {

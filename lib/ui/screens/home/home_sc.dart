@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quizzler/providers/role_provider.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
-import 'package:quizzler/ui/screens/settings/settings_sc.dart';
+import 'package:quizzler/ui/screens/quiz/quiz_screen.dart';
+import 'package:quizzler/ui/screens/settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "home_screen";
@@ -13,13 +16,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int tabIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    var roleProvider = Provider.of<RoleProvider>(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
-        onPressed: () {}, /// Todo -> quiz creation logic
+        onPressed: () {
+          Navigator.pushNamed(context, QuizCreationScreen.routeName);
+        },
+
+        /// Todo -> quiz creation logic
         shape: const StadiumBorder(
           side: BorderSide(
             width: 4,
@@ -30,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
           Icons.add,
         ),
       ),
-      backgroundColor: Colors.white,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         color: Colors.blue,
@@ -38,31 +47,34 @@ class _HomeScreenState extends State<HomeScreen> {
         notchMargin: 10,
         clipBehavior: Clip.hardEdge,
         child: BottomNavigationBar(
-            items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
-        ],
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: "Settings"),
+          ],
           currentIndex: tabIndex,
           elevation: 0,
           onTap: (index) {
-              tabIndex = index;
-              setState(() {});
+            tabIndex = index;
+            setState(() {});
           },
         ),
       ),
-      body: tabIndex == 0 ? Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(
-              context,
-              LoginScreen.routeName,
-            );
-          },
-          child: const Text(
-            "Login",
-          ),
-        ),
-      ) : const SettingsScreen()
+      body: tabIndex == 0
+          ? Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    LoginScreen.routeName,
+                  );
+                },
+                child: Text(
+                  "selectedRole field: ${roleProvider.selectedRole}",
+                ),
+              ),
+            )
+          : const SettingsScreen(),
     );
   }
 }
