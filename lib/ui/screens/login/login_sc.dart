@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quizzler/providers/auth_provider.dart';
 import 'package:quizzler/providers/role_provider.dart';
-import 'package:quizzler/ui/screens/home/home_sc.dart';
-import 'package:quizzler/ui/screens/home/student_home_screen.dart';
+import 'package:quizzler/ui/screens/home/lecturer/lecturer_home_sc.dart';
+import 'package:quizzler/ui/screens/home/student/student_tab_view.dart';
 import 'package:quizzler/ui/screens/register/register_sc.dart';
 import 'package:quizzler/utilities/dialogs.dart';
 import 'package:quizzler/utilities/fieldValidations.dart';
@@ -144,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 InkWell(
                                   onTap: () {
-                                    Navigator.pushNamed(
+                                    Navigator.pushReplacementNamed(
                                         context, RegistrationScreen.routeName);
                                   },
                                   child: const Text(
@@ -231,38 +231,15 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       MyDialogs.showLoadingDialog(context);
       var authProvider  = Provider.of<AuthenticationProvider>(context, listen: false);
-      var roleProvider  = Provider.of<RoleProvider>(context, listen: false);
-      await authProvider.login(emailController.text, passwordController.text);
-      MyDialogs.dismissDialog(context);
-      // String? userRole = roleProvider.selectedRole;
-      String userRole = roleProvider.userRole;
-
-      /// Todo => try to find a way to call the "updateSelectedRole" method as you log in
-
-      if (userRole == "Lecturer") {
-        MyDialogs.showCustomDialog(context,dialogMessage:  "Logged in successfully!", positiveActionName: "Ok", isDismissible: false, positiveAction: () {
-          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
-        }
-        );
-      } else if (userRole == "Student") {
-        MyDialogs.showCustomDialog(context,dialogMessage:  "Logged in successfully!", positiveActionName: "Ok", isDismissible: false, positiveAction: () {
-          Navigator.pushReplacementNamed(context, StudentHomeScreen.routeName);
-        }
-        );
-      } else {
-        MyDialogs.showCustomDialog(context, dialogMessage: "Error", isDismissible: true);
-      }
-
+      await authProvider.login(emailController.text, passwordController.text, context);
 
     } on FirebaseAuthException catch (e) {
       MyDialogs.dismissDialog(context);
       if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == "INVALID_LOGIN_CREDENTIALS" ) {
         MyDialogs.showCustomDialog(context, isDismissible: true, dialogMessage: "Invalid login credentials.\nPlease, try again.", positiveActionName: "Ok");
-      // } else {
-      //   MyDialogs.showCustomDialog(context, isDismissible: true, dialogMessage:  "Something went wrong.\nPlease, try again.\nError: ${e.code}", positiveActionName: "Ok");
+      } else {
+        MyDialogs.showCustomDialog(context, isDismissible: true, dialogMessage:  "Something went wrong.\nPlease, try again.\nError: ${e.code}", positiveActionName: "Ok");
       }
     }
   }
-
-
 }

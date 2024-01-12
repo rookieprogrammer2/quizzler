@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quizzler/providers/role_provider.dart';
+import 'package:quizzler/ui/screens/home/lecturer/lecturer_home_sc.dart';
+import 'package:quizzler/ui/screens/home/lecturer/lecturer_tab_view.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
 import 'package:quizzler/ui/screens/quiz/quiz_screen.dart';
 import 'package:quizzler/ui/screens/settings/settings_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  static const routeName = "home_screen";
+class LecturerTabView extends StatefulWidget {
+  static const routeName = "lecturer_tab_view";
 
-  const HomeScreen({super.key});
+  const LecturerTabView({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<LecturerTabView> createState() => _LecturerTabViewState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _LecturerTabViewState extends State<LecturerTabView> {
   int tabIndex = 0;
 
   @override
@@ -49,8 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: BottomNavigationBar(
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: "Settings"),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
           ],
           currentIndex: tabIndex,
           elevation: 0,
@@ -61,19 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: tabIndex == 0
-          ? Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    LoginScreen.routeName,
-                  );
-                },
-                child: Text(
-                  "selectedRole field: ${roleProvider.selectedRole}",
-                ),
-              ),
-            )
+          ? const LecturerHomeScreen()
           : const SettingsScreen(),
     );
   }

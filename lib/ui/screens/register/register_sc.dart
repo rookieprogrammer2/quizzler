@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quizzler/providers/role_provider.dart';
 import 'package:quizzler/providers/auth_provider.dart';
-import 'package:quizzler/ui/screens/home/home_sc.dart';
+import 'package:quizzler/ui/screens/home/lecturer/lecturer_home_sc.dart';
 import 'package:quizzler/ui/screens/login/login_sc.dart';
 import 'package:quizzler/utilities/dialogs.dart';
 import 'package:quizzler/utilities/fieldValidations.dart';
@@ -233,7 +233,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
         InkWell(
           onTap: () {
-            Navigator.pushNamed(context, LoginScreen.routeName);
+            Navigator.pushReplacementNamed(context, LoginScreen.routeName);
           },
           child: const Text(
             "Login ",

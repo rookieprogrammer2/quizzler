@@ -9,28 +9,9 @@ class RoleProvider extends ChangeNotifier {
 
   String get selectedRole => _selectedRole;
 
-  void updateSelectedRole(String newRole) {
-    _selectedRole = newRole;
+  void updateSelectedRole(String? newRole) {
+    _selectedRole = newRole!;
     notifyListeners();
   }
-
-  String get userRole  {
-    // FirebaseFirestore.instance.collection("users");
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    UsersDAO.usersCollection.doc(uid).get().then((DocumentSnapshot documentSnapshot) {
-        if (documentSnapshot.exists) {
-          if (documentSnapshot.get("role") == "Lecturer") {
-            return "Lecturer";
-          } else {
-            return "Student";
-          }
-        } else {
-          return "Document Snapshot Does not Exist";
-        }
-      }
-      );
-       return "I don't know";
-  }
-
 
 }

@@ -11,12 +11,8 @@ class UsersDAO {
     return usersCollection;
   }
 
-// This is the function that is called in the second part within the "register" function,
-//  which means that this is where the magic happens.
   static Future<void> createUser (User user) {
     return usersCollection.doc(user.id).set(user);
-// Returns a DocumentReference with the provided path.
-// Sets data on that document, overwriting any existing data. If the document does not yet exist, it will be created.
   }
 
   static Future<User?> getUser (String uid) async {
@@ -24,6 +20,7 @@ class UsersDAO {
     var docSnapshot = await doc.get();
     return docSnapshot.data();
   }
+
 }
 /*
 Containing class: CollectionReference

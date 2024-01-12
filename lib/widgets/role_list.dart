@@ -48,7 +48,7 @@ class _MyRoleState extends State<MyRole> {
             onChanged: (String? value) {
               setState(() {
                 roleProvider.updateSelectedRole(value!);
-                dropdownMenuItem = value.toString();
+                dropdownMenuItem = value;
               });
             },
             items: _roles.map((String item) {
